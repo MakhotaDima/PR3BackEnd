@@ -5,7 +5,12 @@ session_start();
 // TODO 2: ROUTING
 
 // TODO 3: CODE by REQUEST METHODS (ACTIONS) GET, POST, etc. (handle data from request): 1) validate 2) working with data source 3) transforming data
-
+if (isset($_POST)){
+    $jsonString = json_encode($_POST);
+    $fileStream = fopen ('comments.csv','a');
+    fwrite($fileStream , $jsonString ."\n");
+    fclose($fileStream);
+}
 // TODO 4: RENDER: 1) view (html) 2) data (from php)
 
 ?>
@@ -33,7 +38,24 @@ session_start();
             <div class="row">
                 <div class="col-sm-6">
 
-                 <!-- TODO: create guestBook html form   -->
+                    <form method="post">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input class="form-control" type="email" name="email"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input class="form-control" type="text" name="name"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Comment</label>
+                            <input class="form-control" type="text" name="comment"/>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary" name="form"/>
+                        </div>
+                    </form>
 
                 </div>
             </div>
@@ -51,8 +73,22 @@ session_start();
             <div class="row">
                 <div class="col-sm-6">
 
-                    <!-- TODO: render guestBook comments   -->
+                    <?php
+                    if ( file_exists ('comments.csv')){
+                        $fileStream = fopen('comments.csv', "r");
+                        while(!feof($fileStream)){
+                            $jsonString = fgets ($fileStream);
+                            $array = json_decode ($jsonString, true);
+                            $h1 = "h1";
 
+                            if (empty ($array)) break ;
+                            echo '<h5>' . $array ['name'] . '</h5>';
+                            echo $array ['email'] . '<br>';
+                            echo $array ['comment'] . '<br><hr>';
+                        }
+                        fclose ($fileStream );
+                    }
+                    ?>
                 </div>
             </div>
         </div>
